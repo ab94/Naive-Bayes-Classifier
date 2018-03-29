@@ -1,5 +1,6 @@
 import sys
 import json
+import math
 
 MODEL_FILE_PATH = "nbmodel.txt"
 OUTPUT_FILE_PATH = "nboutput.txt"
@@ -26,7 +27,7 @@ def find_class(sentence, model):
 
     # Initialize the probability for each class with the prior probabilities.
     for class_name in classes:
-        class_probabilities[class_name] = model['prior_class_count'][class_name]/model['line_count']
+        class_probabilities[class_name] = math.log(model['prior_class_count'][class_name]/model['line_count'])
 
     for index, word in enumerate(words):
         if index == 0:
@@ -35,7 +36,7 @@ def find_class(sentence, model):
             for class_name in classes:
                 freq = 0 if word not in model['class_word_count'][class_name] else model['class_word_count'][class_name][word]
                 word_probability = (freq + 1)/(model['total_word_count'][class_name] + model['unique_word_count'])
-                class_probabilities[class_name] *= word_probability
+                class_probabilities[class_name] += math.log(word_probability)
 
     output['class1'] = 'Fake' if class_probabilities['Fake'] > class_probabilities['True'] else 'True'
     output['class2'] = 'Pos' if class_probabilities['Pos'] > class_probabilities['Neg'] else 'Neg'
