@@ -33,6 +33,7 @@ def parse_input_file(input_file):
                 classes.append(word)
                 add_one(prior_class_count, word)
             else:
+                word = filter_word(word)
                 for class_name in classes:
                     increment_word_count(class_word_count, class_name, word)
                     add_one(total_word_count, class_name)
@@ -65,6 +66,15 @@ def add_one(dictionary, key):
         dictionary[key] = 1
     else:
         dictionary[key] += 1
+
+
+def filter_word(word):
+    word = word.replace("-", "").replace("!", "").replace(".", "")\
+        .replace(",", "").replace("\"", "").replace("(","").replace(")", "").replace("\\", "")\
+        .replace("/", "")
+
+    # word = word.lower()
+    return word
 
 
 if __name__ == "__main__":

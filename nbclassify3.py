@@ -1,6 +1,7 @@
 import sys
 import json
 import math
+from nblearn3 import filter_word
 
 MODEL_FILE_PATH = "nbmodel.txt"
 OUTPUT_FILE_PATH = "nboutput.txt"
@@ -34,6 +35,7 @@ def find_class(sentence, model):
             output['hash'] = word
         else:
             for class_name in classes:
+                word = filter_word(word)
                 freq = 0 if word not in model['class_word_count'][class_name] else model['class_word_count'][class_name][word]
                 word_probability = (freq + 1)/(model['total_word_count'][class_name] + model['unique_word_count'])
                 class_probabilities[class_name] += math.log(word_probability)
