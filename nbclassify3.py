@@ -28,7 +28,8 @@ def find_class(sentence, model):
 
     # Initialize the probability for each class with the prior probabilities.
     for class_name in classes:
-        class_probabilities[class_name] = math.log(model['prior_class_count'][class_name]/model['line_count'])
+        prior_class_count = model['prior_class_count'][class_name]
+        class_probabilities[class_name] = math.log(prior_class_count/model['line_count'])
 
     for index, word in enumerate(words):
         if index == 0:
@@ -36,13 +37,22 @@ def find_class(sentence, model):
         else:
             for class_name in classes:
                 word = filter_word(word)
-                freq = 0 if word not in model['class_word_count'][class_name] else model['class_word_count'][class_name][word]
-                word_probability = (freq + 1)/(model['total_word_count'][class_name] + model['unique_word_count'])
+                word_freq = word_frequency(word, model, class_name)
+                class_frequency = (model['total_word_count'][class_name] + model['unique_word_count'])
+                word_probability = (word_freq + 1)/class_frequency
                 class_probabilities[class_name] += math.log(word_probability)
 
     output['class1'] = 'Fake' if class_probabilities['Fake'] > class_probabilities['True'] else 'True'
     output['class2'] = 'Pos' if class_probabilities['Pos'] > class_probabilities['Neg'] else 'Neg'
     return output
+
+
+def word_frequency(word, model, class_name):
+    if word not in model['class_word_count'][class_name]:
+        freq = 0
+    else:
+        freq = model['class_word_count'][class_name][word]
+    return freq
 
 
 if __name__ == "__main__":

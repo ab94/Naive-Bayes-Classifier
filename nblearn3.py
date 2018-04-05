@@ -1,5 +1,6 @@
 import sys
 import json
+import re
 
 MODEL_FILE_PATH = "nbmodel.txt"
 NUMBER_OF_CLASSES = 2
@@ -7,9 +8,6 @@ NUMBER_OF_CLASSES = 2
 
 def create_model():
     training_data_path = sys.argv[1];
-    if training_data_path is None:
-        print("Enter path to training data")
-        exit(1)
 
     input_file = open(training_data_path, 'r', encoding='utf-8')
     output = parse_input_file(input_file)
@@ -26,7 +24,7 @@ def parse_input_file(input_file):
     unique_words = set()
 
     for line in input_file:
-        words = line.split(" ") # TODO incorporate multi-separators here.
+        words = line.split(" ")
 
         for index, word in enumerate(words):
             if index in range(1, NUMBER_OF_CLASSES + 1):
@@ -69,11 +67,8 @@ def add_one(dictionary, key):
 
 
 def filter_word(word):
-    word = word.replace("-", "").replace("!", "").replace(".", "")\
-        .replace(",", "").replace("\"", "").replace("(","").replace(")", "").replace("\\", "")\
-        .replace("/", "")
-
-    # word = word.lower()
+    punctuations = re.compile('([-!.,"()=/\\\])')
+    word = re.sub(punctuations, "", word)
     return word
 
 
